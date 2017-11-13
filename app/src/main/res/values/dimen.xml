@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="dimen_buttonTextSize">30sp</dimen>
+    <dimen name="dimen_mediumTextSize">40sp</dimen>
+    <dimen name="dimen_smallTextSize">20sp</dimen>
+    <dimen name="dimen_listTextSizeMedium">24sp</dimen>
+    <dimen name="dimen_listTextSizeLarge">30sp</dimen>
+    <dimen name="dimen_btnCardHeight">250dp</dimen>
+    <dimen name="dimen_switchWidth">60dp</dimen>
+    <dimen name="dimen_titleHeight">150dp</dimen>
+    <dimen name="dimen_circularProgressHeight">38dp</dimen>
+</resources>

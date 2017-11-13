@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:baselineAligned="false"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:paddingBottom="30dp"
+    android:paddingLeft="30dp"
+    android:paddingRight="30dp"
+    android:paddingTop="30dp">
+
+    <Button
+        android:id="@+id/btn_findNewDevices"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="30dp"
+        android:layout_weight="1"
+        android:background="@color/dark_blue"
+        android:onClick="onFindNewDevicesClick"
+        android:text="@string/txtConnectADevice"
+        android:textAllCaps="false"
+        android:textColor="@color/light_blue"
+        android:textSize="@dimen/dimen_buttonTextSize" />
+
+    <Button
+        android:id="@+id/btn_connectedDevices"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@color/dark_blue"
+        android:text="@string/txtConnectedDevices"
+        android:textAllCaps="false"
+        android:onClick="onConnectedDevicesClick"
+        android:textColor="@color/light_blue"
+        android:textSize="@dimen/dimen_buttonTextSize" />
+
+</LinearLayout>
