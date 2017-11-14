@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">F.A.I.N Home</string>
-    <string name="txtConnectADevice">Connect a Device</string>
+    <string name="txtConnectADevice">Connect a New Device</string>
     <string name="txtConnectedDevices">Connected Devices</string>
     <string name="txtAvailableDevices">Available Devices</string>
     <string name="txtPairing">Pairing</string>
@@ -98,4 +98,6 @@
     </string>
     <string name="txtPlaceHolderBluetoothText">Bluetooth Device Name</string>
     <string name="txtPlaceHolderConnectedBluetoothText">Bluetooth Device Name</string>
+    <string name="txtBluetoothNotSupported">Your device does not support Bluetooth Technology</string>
+    <string name="txtBluetoothIsSupported">Bluetooth is Supported</string>
 </resources>

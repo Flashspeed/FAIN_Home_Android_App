@@ -12,7 +12,7 @@ import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.Toast;
 
-import com.example.custom_adapters.BluetoothDeviceAdapter;
+import com.example.custom_adapters.PairedBluetoothDeviceAdapter;
 
 public class ConnectedDevicesActivity extends AppCompatActivity
 {
@@ -48,7 +48,7 @@ public class ConnectedDevicesActivity extends AppCompatActivity
 //        bluetoothConnectedDevicesListView.setAdapter(connectedBluetoothDevicesAdapter);
 //        bluetoothConnectedDevicesListView.setOnItemClickListener(new bluetoothConnectedDeviceItemClickListener());
 
-        ListAdapter listAdapter = new BluetoothDeviceAdapter(this, connectedBluetoothDevices);
+        ListAdapter listAdapter = new PairedBluetoothDeviceAdapter(this, connectedBluetoothDevices);
         bluetoothConnectedDevicesListView.setAdapter(listAdapter);
     }
 

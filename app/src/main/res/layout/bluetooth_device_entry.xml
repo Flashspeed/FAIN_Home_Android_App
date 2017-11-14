@@ -5,7 +5,7 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/cheese_names"
+        android:id="@+id/unpairedBluetoothDeviceName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/light_grey"

@@ -19,14 +19,14 @@ import android.widget.Toast;
 
 import com.example.fain_home.R;
 
-public class BluetoothDeviceAdapter extends ArrayAdapter<String>
+public class PairedBluetoothDeviceAdapter extends ArrayAdapter<String>
 {
     private String deviceName;
     private String[] arrayDeviceNames;
 
     private ListView bluetoothConnectedDevicesListView;
 
-    public BluetoothDeviceAdapter(@NonNull Context context, String[] bluetoothDeviceName)
+    public PairedBluetoothDeviceAdapter(@NonNull Context context, String[] bluetoothDeviceName)
     {
         super(context, R.layout.bluetooth_connected_devices_entry, bluetoothDeviceName);
     }
@@ -48,7 +48,7 @@ public class BluetoothDeviceAdapter extends ArrayAdapter<String>
 
         for(String names : arrayDeviceNames)
         {
-            Log.i("BluetoothDeviceAdapter", String.format("Device names %s", names));
+            System.out.println(String.format("__Device names %s", names));
         }
 
         final Switch deviceSwitch = customView.findViewById(R.id.deviceStateSwitch);
@@ -56,9 +56,6 @@ public class BluetoothDeviceAdapter extends ArrayAdapter<String>
         textView.setText(deviceName);
 
         deviceSwitch.setTag(position);
-
-//        deviceSwitch.setOnCheckedChangeListener(new switchCheckedListener());
-
 
         deviceSwitch.setOnClickListener(new OnClickListener()
         {
