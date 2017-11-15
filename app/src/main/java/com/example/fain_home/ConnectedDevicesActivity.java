@@ -17,7 +17,7 @@ import com.example.custom_adapters.PairedBluetoothDeviceAdapter;
 public class ConnectedDevicesActivity extends AppCompatActivity
 {
     ListView bluetoothConnectedDevicesListView;
-    Switch deviceSwitch;
+    Switch   deviceSwitch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -34,9 +34,9 @@ public class ConnectedDevicesActivity extends AppCompatActivity
     public void showConnectedBluetoothDevices()
     {
         String[] connectedBluetoothDevices = new String[10];
-        for(int i=0; i<connectedBluetoothDevices.length; i++)
+        for (int i = 0; i < connectedBluetoothDevices.length; i++)
         {
-            connectedBluetoothDevices[i] = "Device " + (i+1);
+            connectedBluetoothDevices[i] = "Device " + (i + 1);
         }
 
         ArrayAdapter<String> connectedBluetoothDevicesAdapter =

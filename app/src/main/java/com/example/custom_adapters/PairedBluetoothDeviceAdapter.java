@@ -21,8 +21,6 @@ import com.example.fain_home.R;
 
 public class PairedBluetoothDeviceAdapter extends ArrayAdapter<String>
 {
-    private String deviceName;
-    private String[] arrayDeviceNames;
 
     private ListView bluetoothConnectedDevicesListView;
 
@@ -38,15 +36,22 @@ public class PairedBluetoothDeviceAdapter extends ArrayAdapter<String>
         LayoutInflater inflatedView = LayoutInflater.from(getContext());
         View customView = inflatedView.inflate(R.layout.bluetooth_connected_devices_entry, parent, false);
 
-        deviceName = getItem(position);
-
-        arrayDeviceNames = new String[deviceName.length()];
-        for(int i=0; i<deviceName.length(); i++)
+        String deviceName = getItem(position);
+        String[] arrayDeviceNames = new String[0];
+        if (deviceName != null)
         {
-            arrayDeviceNames[i] = deviceName;
+            arrayDeviceNames = new String[deviceName.length()];
         }
 
-        for(String names : arrayDeviceNames)
+        if (deviceName != null)
+        {
+            for (int i = 0; i < deviceName.length(); i++)
+            {
+                arrayDeviceNames[i] = deviceName;
+            }
+        }
+
+        for (String names : arrayDeviceNames)
         {
             System.out.println(String.format("__Device names %s", names));
         }
@@ -62,7 +67,7 @@ public class PairedBluetoothDeviceAdapter extends ArrayAdapter<String>
             @Override
             public void onClick(View v)
             {
-                if(deviceSwitch.isChecked())
+                if (deviceSwitch.isChecked())
                 {
                     Toast.makeText(
                             getContext(),

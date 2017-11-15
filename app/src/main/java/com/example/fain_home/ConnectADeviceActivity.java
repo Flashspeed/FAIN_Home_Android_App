@@ -7,29 +7,41 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import com.example.custom_classes.UnpairedBluetoothDevices;
+import com.example.custom_adapters.UnpairedBluetoothDevicesAdapter;
+
 import java.util.ArrayList;
 import java.util.Set;
 
 public class ConnectADeviceActivity extends AppCompatActivity
 {
-    ListView bluetoothDevicesListView;
-    BluetoothAdapter bluetoothAdapter;
-    Intent intentBluetoothEnable;
-    final String TAG = "ConnectADeviceActivity";
-    final int REQUEST_CODE = 1;
-    final int ASK_USER_ENABLE_BLUETOOTH_REQUEST_CODE = 2;
-    ArrayList<String> arrayListUnpairedDevices = new ArrayList<>();
-    ArrayList<String> arrayListPairedDevices = new ArrayList<>();
-    ArrayAdapter<String> arrayAdapterDeviceName;
+    /*
+     * https://stackoverflow.com/questions/38188887/android-6-0-bluetooth-no-code-exists-for-action-found-broadcast-intent
+     */
+    ListView           bluetoothDevicesListView;
+    BluetoothAdapter   bluetoothAdapter;
+    Intent             intentBluetoothEnable;
+    SwipeRefreshLayout swipeRefreshLayout;
+
+    final String ACTIVITY_TAG                                      = "ConnectADeviceActivity";
+    final String BLUETOOTH_TAG                                     = "Bluetooth Activity";
+    final int    REQUEST_CODE                                      = 1;
+    final int    ASK_USER_ENABLE_BLUETOOTH_REQUEST_CODE            = 2;
+    final int    ASK_USER_ENABLE_BLUETOOTH_ON_REFRESH_REQUEST_CODE = 3;
+
+    ArrayList<String>                   arrayListPairedDevices   = new ArrayList<>();
+    ArrayList<BluetoothDevice>          arrayListBluetoothDevice = new ArrayList<>();
+    ArrayList<UnpairedBluetoothDevices> unpairedBluetoothDevice  = new ArrayList<>();
 
     /* Create broadcast receiver for when a bluetooth device is found */
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
@@ -49,15 +61,32 @@ public class ConnectADeviceActivity extends AppCompatActivity
                 String deviceName = foundDevice.getName();
                 String deviceMacAddress = foundDevice.getAddress();
 
-                arrayListUnpairedDevices.add(String.format("%s : %s", deviceName, deviceMacAddress));
-                arrayAdapterDeviceName =
-                        new ArrayAdapter<String>(getApplicationContext(),
-                                R.layout.bluetooth_device_entry,
-                                R.id.unpairedBluetoothDeviceName,
-                                arrayListUnpairedDevices);
+                arrayListBluetoothDevice.add(foundDevice);
 
-                bluetoothDevicesListView.setAdapter(arrayAdapterDeviceName);
-                Log.i(TAG, String.format("__(Found New)%s", deviceName));
+                UnpairedBluetoothDevices unpairedBluetoothDevices =
+                        new UnpairedBluetoothDevices(deviceName, deviceMacAddress);
+                unpairedBluetoothDevice.add(unpairedBluetoothDevices);
+
+                UnpairedBluetoothDevicesAdapter unpairedDevice =
+                        new UnpairedBluetoothDevicesAdapter(getApplicationContext(), unpairedBluetoothDevice);
+
+                bluetoothDevicesListView.setAdapter(unpairedDevice);
+                Log.i(ACTIVITY_TAG, String.format("__(Found New)%s", deviceName));
+            }
+            else if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action))
+            {
+                swipeRefreshLayout.setRefreshing(true);
+                Log.i(BLUETOOTH_TAG, String.format("__%s", "ACTION_DISCOVERY_STARTED"));
+
+                /* Clear the array list of already found devices to stop devices from showing up
+                   again when the scan is initiated again.
+                 */
+                unpairedBluetoothDevice.clear();
+            }
+            else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action))
+            {
+                swipeRefreshLayout.setRefreshing(false);
+                Log.i(BLUETOOTH_TAG, String.format("__%s", "ACTION_DISCOVERY_FINISHED"));
             }
         }
     };
@@ -73,6 +102,42 @@ public class ConnectADeviceActivity extends AppCompatActivity
 
         /* Initialize a list view to show the cheeses in vertically */
         bluetoothDevicesListView = findViewById(R.id.listView);
+        swipeRefreshLayout = findViewById(R.id.swipeRefresh);
+
+        swipeRefreshLayout.setColorSchemeColors(
+                Color.rgb(255, 0, 0),
+                Color.rgb(255, 69, 0),
+                Color.argb(50, 0, 0, 255));
+
+        swipeRefreshLayout.setOnRefreshListener(new OnRefreshListener()
+        {
+            @Override
+            public void onRefresh()
+            {
+                swipeRefreshLayout.setRefreshing(false);
+
+                /* Remove the views from the layout for a fresh start */
+                bluetoothDevicesListView.removeAllViewsInLayout();
+
+                if (!bluetoothAdapter.isEnabled())
+                {
+                    askUserToEnableBluetooth(ASK_USER_ENABLE_BLUETOOTH_REQUEST_CODE);
+                }
+
+                if (bluetoothAdapter.isDiscovering())
+                {
+                    bluetoothAdapter.cancelDiscovery();
+                    bluetoothAdapter.startDiscovery();
+                    swipeRefreshLayout.setRefreshing(true);
+                }
+                else
+                {
+                    bluetoothAdapter.startDiscovery();
+                    swipeRefreshLayout.setRefreshing(true);
+                }
+                Log.i(ACTIVITY_TAG, "__refreshed");
+            }
+        });
 
         /* Initialize the device bluetooth adapter */
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -82,82 +147,22 @@ public class ConnectADeviceActivity extends AppCompatActivity
         showUnpairedBluetoothDevices();
     }
 
-    public void showUnpairedBluetoothDevices()
+    @Override
+    protected void onResume()
     {
-        /* If Bluetooth is supported */
-        if (isBluetoothSupported())
+        super.onResume();
+
+        if (!bluetoothAdapter.isDiscovering())
         {
-            Log.i(TAG, String.format("%s%s", "__", getString(R.string.txtBluetoothIsSupported)));
-
-            /* If Bluetooth IS enabled */
-            if (bluetoothAdapter.isEnabled())
-            {
-                Log.i(TAG, "__Bluetooth is enabled");
-
-                showPairedBluetoothDevices();
-                registerBroadcastReceiver();
-
-                /* If device is already discovering, restart discovery process */
-                if (bluetoothAdapter.isDiscovering())
-                {
-                    bluetoothAdapter.cancelDiscovery();
-
-                }
-
-                /* Start bluetooth discovery */
-                bluetoothAdapter.startDiscovery();
-                Log.i(TAG, "__Now Discovering");
-            }
-            else
-            {
-                Log.i(TAG, "__Bluetooth is NOT enabled");
-                askUserToEnableBluetooth();
-            }
+            bluetoothAdapter.startDiscovery();
         }
-        else
-        {
-            Toast.makeText(this,
-                    R.string.txtBluetoothNotSupported,
-                    Toast.LENGTH_LONG).show();
-        }
-
-        bluetoothDevicesListView.setOnItemClickListener(new bluetoothItemClickListener());
     }
 
-    public void askUserToEnableBluetooth()
+    @Override
+    protected void onPause()
     {
-        /* Register an intent to request the user to enable the bluetooth adapter */
-        intentBluetoothEnable = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-
-        /* request code REQUEST_CODE locally defined integer that must be greater than 0 */
-        startActivityForResult(intentBluetoothEnable, ASK_USER_ENABLE_BLUETOOTH_REQUEST_CODE);
-    }
-
-    public void registerBroadcastReceiver()
-    {
-        /* Register an intent to receive broadcasts when a bluetooth device is found */
-        IntentFilter intentFilter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-        registerReceiver(broadcastReceiver, intentFilter);
-
-        Log.i(TAG, "__broadcastReceiver is now registered");
-    }
-
-    /**
-     * List the names of paired devices to LogCat
-     */
-    public void showPairedBluetoothDevices()
-    {
-        /* Get a list of known paired devices */
-        Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
-
-        if (pairedDevices.size() > 0)
-        {
-            for (BluetoothDevice currentPairedDevice : pairedDevices)
-            {
-                arrayListPairedDevices.add(currentPairedDevice.getName());
-                Log.i(TAG, String.format("%s%s", "__(known)", currentPairedDevice.getName()));
-            }
-        }
+        super.onPause();
+        bluetoothAdapter.cancelDiscovery();
     }
 
     @Override
@@ -165,24 +170,19 @@ public class ConnectADeviceActivity extends AppCompatActivity
     {
         super.onDestroy();
 
+        if (bluetoothAdapter.isDiscovering())
+        {
+            bluetoothAdapter.cancelDiscovery();
+        }
+
         try
         {
             unregisterReceiver(broadcastReceiver);
         }
         catch (IllegalArgumentException e)
         {
-            Log.i(TAG, String.format("%s", "broadcastReceiver has already been unregistered"));
+            Log.i(ACTIVITY_TAG, String.format("%s", "broadcastReceiver has already been unregistered"));
         }
-    }
-
-    /**
-     * Returns true if the device supports Bluetooth
-     * @return true if Bluetooth is supported on the device.
-     */
-    private boolean isBluetoothSupported()
-    {
-        /* Get the device bluetooth radio A.K.A Adapter */
-        return bluetoothAdapter != null;
     }
 
     /*
@@ -209,12 +209,137 @@ public class ConnectADeviceActivity extends AppCompatActivity
                     case RESULT_CANCELED:
                         break;
                 }
+
+            case ASK_USER_ENABLE_BLUETOOTH_ON_REFRESH_REQUEST_CODE:
+                switch (resultCode)
+                {
+                    case RESULT_OK:
+                        Log.i(ACTIVITY_TAG, "__SAID OK");
+                        break;
+
+                    case RESULT_CANCELED:
+                        swipeRefreshLayout.setRefreshing(false);
+                        if (bluetoothAdapter.isDiscovering())
+                        {
+                            bluetoothAdapter.cancelDiscovery();
+                        }
+                        break;
+                }
         }
 
         Toast.makeText(this,
                 String.format("Request code returned was %d \n Result code returned was %d", requestCode, resultCode),
                 Toast.LENGTH_LONG).show();
     }
+
+    public void showUnpairedBluetoothDevices()
+    {
+        /* If Bluetooth is supported */
+        if (isBluetoothSupported())
+        {
+            Log.i(ACTIVITY_TAG, String.format("%s%s", "__", getString(R.string.txtBluetoothIsSupported)));
+
+            /* If Bluetooth IS enabled */
+            if (bluetoothAdapter.isEnabled())
+            {
+                Log.i(ACTIVITY_TAG, "__Bluetooth is enabled");
+
+                showPairedBluetoothDevices();
+                registerBroadcastReceiver();
+
+                /* If device is already discovering, restart discovery process */
+                if (bluetoothAdapter.isDiscovering())
+                {
+                    bluetoothAdapter.cancelDiscovery();
+
+                }
+
+                /* Start bluetooth discovery */
+                bluetoothAdapter.startDiscovery();
+                Log.i(ACTIVITY_TAG, "__Now Discovering");
+            }
+            else
+            {
+                Log.i(ACTIVITY_TAG, "__Bluetooth is NOT enabled");
+                askUserToEnableBluetooth(ASK_USER_ENABLE_BLUETOOTH_REQUEST_CODE);
+            }
+        }
+        else
+        {
+            Toast.makeText(this,
+                    R.string.txtBluetoothNotSupported,
+                    Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public void askUserToEnableBluetooth(int requestCode)
+    {
+        switch (requestCode)
+        {
+            case ASK_USER_ENABLE_BLUETOOTH_ON_REFRESH_REQUEST_CODE:
+                /* Register an intent to request the user to enable the bluetooth adapter */
+                intentBluetoothEnable = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+
+                /* request code REQUEST_CODE locally defined integer that must be greater than 0 */
+                startActivityForResult(intentBluetoothEnable, requestCode);
+                break;
+
+            case ASK_USER_ENABLE_BLUETOOTH_REQUEST_CODE:
+                /* Register an intent to request the user to enable the bluetooth adapter */
+                intentBluetoothEnable = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+
+                /* request code REQUEST_CODE locally defined integer that must be greater than 0 */
+                startActivityForResult(intentBluetoothEnable, requestCode);
+
+        }
+    }
+
+    public void registerBroadcastReceiver()
+    {
+        /* Register an intent to receive broadcasts when a bluetooth device is found */
+        IntentFilter intentFilter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+        registerReceiver(broadcastReceiver, intentFilter);
+
+        /* Intent for when bluetooth scanning is started */
+        IntentFilter intentFilterDiscoveryStarted = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
+        registerReceiver(broadcastReceiver, intentFilterDiscoveryStarted);
+
+        /* Intent for when bluetooth scanning is finished */
+        IntentFilter intentFilterDiscoveryFinished = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+        registerReceiver(broadcastReceiver, intentFilterDiscoveryFinished);
+
+        Log.i(ACTIVITY_TAG, "__broadcastReceiver is now registered");
+    }
+
+    /**
+     * List the names of paired devices to LogCat
+     */
+    public void showPairedBluetoothDevices()
+    {
+        /* Get a list of known paired devices */
+        Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
+
+        if (pairedDevices.size() > 0)
+        {
+            for (BluetoothDevice currentPairedDevice : pairedDevices)
+            {
+                arrayListPairedDevices.add(currentPairedDevice.getName());
+                Log.i(ACTIVITY_TAG, String.format("%s%s", "__(known)", currentPairedDevice.getName()));
+            }
+        }
+    }
+
+    /**
+     * Returns true if the device supports Bluetooth
+     *
+     * @return true if Bluetooth is supported on the device.
+     */
+    private boolean isBluetoothSupported()
+    {
+        /* Get the device bluetooth radio A.K.A Adapter */
+        return bluetoothAdapter != null;
+    }
+
 
     /* Called when the user makes a choice on a permissions dialog */
 //    @Override
@@ -226,17 +351,4 @@ public class ConnectADeviceActivity extends AppCompatActivity
 //        }
 //    }
 
-    public class bluetoothItemClickListener implements AdapterView.OnItemClickListener
-    {
-        /* When the user taps an item in the list view */
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-        {
-            Log.i("ConnectADeviceActivity", String.format("Item %d clicked. It's text is %s", position, bluetoothDevicesListView.getItemAtPosition(position)));
-            Toast.makeText(
-                    ConnectADeviceActivity.this,
-                    String.format("You tapped %s at index position %d", bluetoothDevicesListView.getItemAtPosition(position), position),
-                    Toast.LENGTH_SHORT).show();
-        }
-    }
 }
