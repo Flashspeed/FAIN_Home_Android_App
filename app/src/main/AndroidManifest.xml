@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.fain_home">
 
-    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
@@ -24,17 +24,11 @@
         <!-- parentActivityName declared to take user back to appropriate parent activity -->
         <activity
             android:name=".ConnectADeviceActivity"
-            android:parentActivityName=".MainActivity">
-
-        </activity>
-
+            android:parentActivityName=".MainActivity"></activity>
         <activity
             android:name=".ConnectedDevicesActivity"
-            android:parentActivityName=".MainActivity">
-
-        </activity>
-
-
+            android:parentActivityName=".MainActivity"></activity>
+        <activity android:name=".PairingActivity"></activity>
     </application>
 
 </manifest>

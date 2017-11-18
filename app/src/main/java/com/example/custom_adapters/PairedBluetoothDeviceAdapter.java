@@ -3,61 +3,56 @@ package com.example.custom_adapters;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.custom_classes.PairedBluetoothDevices;
 import com.example.fain_home.R;
 
-public class PairedBluetoothDeviceAdapter extends ArrayAdapter<String>
-{
+import java.util.ArrayList;
 
+public class PairedBluetoothDeviceAdapter extends ArrayAdapter<PairedBluetoothDevices>
+{
     private ListView bluetoothConnectedDevicesListView;
 
-    public PairedBluetoothDeviceAdapter(@NonNull Context context, String[] bluetoothDeviceName)
+    public PairedBluetoothDeviceAdapter(
+            @NonNull Context context,
+            ArrayList<PairedBluetoothDevices> unpairedBluetoothDevices)
     {
-        super(context, R.layout.bluetooth_connected_devices_entry, bluetoothDeviceName);
+        super(context, 0, unpairedBluetoothDevices);
     }
 
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent)
     {
-        LayoutInflater inflatedView = LayoutInflater.from(getContext());
-        View customView = inflatedView.inflate(R.layout.bluetooth_connected_devices_entry, parent, false);
+        final PairedBluetoothDevices pairedDevice         = getItem(position);
+        LayoutInflater               inflatedView         = LayoutInflater.from(getContext());
+        View                         customView           = inflatedView.inflate(R.layout.bluetooth_connected_devices_entry, parent, false);
+        ArrayList<String>            arrayListDeviceNames = new ArrayList<>();
 
-        String deviceName = getItem(position);
-        String[] arrayDeviceNames = new String[0];
-        if (deviceName != null)
-        {
-            arrayDeviceNames = new String[deviceName.length()];
-        }
+        assert pairedDevice != null;
+        String deviceName       = pairedDevice.getDeviceName();
+        String deviceMacAddress = pairedDevice.getDeviceMacAddress();
 
-        if (deviceName != null)
-        {
-            for (int i = 0; i < deviceName.length(); i++)
-            {
-                arrayDeviceNames[i] = deviceName;
-            }
-        }
+        /* Every time getView is called add the device name to array list */
+        arrayListDeviceNames.add(deviceName);
 
-        for (String names : arrayDeviceNames)
+        for (String names : arrayListDeviceNames)
         {
             System.out.println(String.format("__Device names %s", names));
         }
 
-        final Switch deviceSwitch = customView.findViewById(R.id.deviceStateSwitch);
-        TextView textView = customView.findViewById(R.id.connectedDeviceName);
+        final Switch   deviceSwitch = customView.findViewById(R.id.deviceStateSwitch);
+        final TextView textView     = customView.findViewById(R.id.connectedDeviceName);
         textView.setText(deviceName);
 
         deviceSwitch.setTag(position);
@@ -72,7 +67,7 @@ public class PairedBluetoothDeviceAdapter extends ArrayAdapter<String>
                     Toast.makeText(
                             getContext(),
                             String.format("Checked state for switch %s is %s",
-                                    v.getTag().toString(),
+                                    textView.getText(),
                                     deviceSwitch.isChecked()
                             ),
                             Toast.LENGTH_SHORT).show();
@@ -82,7 +77,7 @@ public class PairedBluetoothDeviceAdapter extends ArrayAdapter<String>
                     Toast.makeText(
                             getContext(),
                             String.format("Checked state for switch %s is %b",
-                                    v.getTag().toString(),
+                                    textView.getText(),
                                     deviceSwitch.isChecked()),
                             Toast.LENGTH_SHORT).show();
                 }
@@ -90,19 +85,6 @@ public class PairedBluetoothDeviceAdapter extends ArrayAdapter<String>
         });
 
         return customView;
-    }
-
-    public class switchCheckChangeListener implements OnCheckedChangeListener
-    {
-        @Override
-        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
-        {
-
-            Toast.makeText(
-                    getContext(),
-                    String.format("Checked state r switch %b", isChecked),
-                    Toast.LENGTH_SHORT).show();
-        }
     }
 
     public class bluetoothConnectedDeviceItemClickListener implements AdapterView.OnItemClickListener

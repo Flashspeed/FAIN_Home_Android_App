@@ -1,23 +1,24 @@
 package com.example.fain_home;
 
-import android.support.v7.app.AppCompatActivity;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
-import android.widget.CompoundButton;
-import android.widget.ListAdapter;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.ListView;
 import android.widget.Switch;
-import android.widget.Toast;
 
 import com.example.custom_adapters.PairedBluetoothDeviceAdapter;
+import com.example.custom_classes.PairedBluetoothDevices;
+
+import java.util.ArrayList;
+import java.util.Set;
 
 public class ConnectedDevicesActivity extends AppCompatActivity
 {
-    ListView bluetoothConnectedDevicesListView;
-    Switch   deviceSwitch;
+    ListView         bluetoothConnectedDevicesListView;
+    BluetoothAdapter bluetoothAdapter;
+    ArrayList<PairedBluetoothDevices> arrayListPairedBluetoothDevices = new ArrayList<>();
+    Switch deviceSwitch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -27,6 +28,7 @@ public class ConnectedDevicesActivity extends AppCompatActivity
         setTitle("Connected Devices");
 
         bluetoothConnectedDevicesListView = findViewById(R.id.bluetoothConnectedDevicesListView);
+        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
         showConnectedBluetoothDevices();
     }
@@ -39,43 +41,26 @@ public class ConnectedDevicesActivity extends AppCompatActivity
             connectedBluetoothDevices[i] = "Device " + (i + 1);
         }
 
-        ArrayAdapter<String> connectedBluetoothDevicesAdapter =
-                new ArrayAdapter<String>(this,
-                        R.layout.bluetooth_connected_devices_entry,
-                        R.id.connectedDeviceName,
-                        connectedBluetoothDevices);
+        Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
 
-//        bluetoothConnectedDevicesListView.setAdapter(connectedBluetoothDevicesAdapter);
-//        bluetoothConnectedDevicesListView.setOnItemClickListener(new bluetoothConnectedDeviceItemClickListener());
-
-        ListAdapter listAdapter = new PairedBluetoothDeviceAdapter(this, connectedBluetoothDevices);
-        bluetoothConnectedDevicesListView.setAdapter(listAdapter);
-    }
-
-    public class bluetoothConnectedDeviceItemClickListener implements OnItemClickListener
-    {
-        /* When the user taps an item in the list view */
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+        if (pairedDevices.size() > 0)
         {
-            Toast.makeText(
-                    ConnectedDevicesActivity.this,
-                    String.format("You tapped %s", bluetoothConnectedDevicesListView.getItemAtPosition(position)),
-                    Toast.LENGTH_SHORT).show();
+            for (BluetoothDevice currentPairedDevice : pairedDevices)
+            {
+                /* Create a new paired device object */
+                PairedBluetoothDevices pairedBluetoothDevice =
+                        new PairedBluetoothDevices(currentPairedDevice.getName(), currentPairedDevice.getAddress());
+
+                /* Add the paired device object to the paired device array list */
+                arrayListPairedBluetoothDevices.add(pairedBluetoothDevice);
+            }
+
+            /* Pass the paired device array list to an adapter */
+            PairedBluetoothDeviceAdapter pairedBluetoothDeviceAdapter =
+                    new PairedBluetoothDeviceAdapter(getApplicationContext(), arrayListPairedBluetoothDevices);
+
+            /* Set the preferred list view to use the paired bluetooth device adapter */
+            bluetoothConnectedDevicesListView.setAdapter(pairedBluetoothDeviceAdapter);
         }
     }
-
-    public class switchCheckedListener implements CompoundButton.OnCheckedChangeListener
-    {
-        @Override
-        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
-        {
-            Toast.makeText(
-                    ConnectedDevicesActivity.this,
-                    String.format("Checked state is %s", isChecked),
-                    Toast.LENGTH_SHORT).show();
-        }
-    }
-
-
 }

@@ -17,8 +17,8 @@ import android.util.Log;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.example.custom_classes.UnpairedBluetoothDevices;
 import com.example.custom_adapters.UnpairedBluetoothDevicesAdapter;
+import com.example.custom_classes.UnpairedBluetoothDevices;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -39,9 +39,9 @@ public class ConnectADeviceActivity extends AppCompatActivity
     final int    ASK_USER_ENABLE_BLUETOOTH_REQUEST_CODE            = 2;
     final int    ASK_USER_ENABLE_BLUETOOTH_ON_REFRESH_REQUEST_CODE = 3;
 
-    ArrayList<String>                   arrayListPairedDevices   = new ArrayList<>();
-    ArrayList<BluetoothDevice>          arrayListBluetoothDevice = new ArrayList<>();
-    ArrayList<UnpairedBluetoothDevices> unpairedBluetoothDevice  = new ArrayList<>();
+    ArrayList<String>                   arrayListPairedDevices       = new ArrayList<>();
+    ArrayList<BluetoothDevice>          arrayListBluetoothDevice     = new ArrayList<>();
+    ArrayList<UnpairedBluetoothDevices> arrayUnpairedBluetoothDevice = new ArrayList<>();
 
     /* Create broadcast receiver for when a bluetooth device is found */
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
@@ -58,17 +58,17 @@ public class ConnectADeviceActivity extends AppCompatActivity
                      */
                 BluetoothDevice foundDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
 
-                String deviceName = foundDevice.getName();
+                String deviceName       = foundDevice.getName();
                 String deviceMacAddress = foundDevice.getAddress();
 
                 arrayListBluetoothDevice.add(foundDevice);
 
-                UnpairedBluetoothDevices unpairedBluetoothDevices =
-                        new UnpairedBluetoothDevices(deviceName, deviceMacAddress);
-                unpairedBluetoothDevice.add(unpairedBluetoothDevices);
+                UnpairedBluetoothDevices unpairedBluetoothDevices = new UnpairedBluetoothDevices(foundDevice);
+
+                arrayUnpairedBluetoothDevice.add(unpairedBluetoothDevices);
 
                 UnpairedBluetoothDevicesAdapter unpairedDevice =
-                        new UnpairedBluetoothDevicesAdapter(getApplicationContext(), unpairedBluetoothDevice);
+                        new UnpairedBluetoothDevicesAdapter(getApplicationContext(), arrayUnpairedBluetoothDevice);
 
                 bluetoothDevicesListView.setAdapter(unpairedDevice);
                 Log.i(ACTIVITY_TAG, String.format("__(Found New)%s", deviceName));
@@ -81,7 +81,7 @@ public class ConnectADeviceActivity extends AppCompatActivity
                 /* Clear the array list of already found devices to stop devices from showing up
                    again when the scan is initiated again.
                  */
-                unpairedBluetoothDevice.clear();
+                arrayUnpairedBluetoothDevice.clear();
             }
             else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action))
             {

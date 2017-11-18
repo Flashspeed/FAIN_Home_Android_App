@@ -1,23 +1,28 @@
 package com.example.custom_classes;
 
+import android.bluetooth.BluetoothDevice;
+
 public class UnpairedBluetoothDevices
 {
-    private String deviceName;
-    private String deviceMacAddress;
+    private BluetoothDevice bluetoothDevice;
 
-    public UnpairedBluetoothDevices(String deviceName, String deviceMacAddress)
+    public UnpairedBluetoothDevices(BluetoothDevice bluetoothDevice)
     {
-        this.deviceName = deviceName;
-        this.deviceMacAddress = deviceMacAddress;
+        this.bluetoothDevice = bluetoothDevice;
     }
 
     public String getDeviceName()
     {
-        return this.deviceName;
+        return this.bluetoothDevice.getName();
     }
 
     public String getDeviceMacAddress()
     {
-        return this.deviceMacAddress;
+        return this.bluetoothDevice.getAddress();
+    }
+
+    public BluetoothDevice getBluetoothDevice()
+    {
+        return this.bluetoothDevice;
     }
 }
