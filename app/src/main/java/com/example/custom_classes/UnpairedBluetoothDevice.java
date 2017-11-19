@@ -2,11 +2,11 @@ package com.example.custom_classes;
 
 import android.bluetooth.BluetoothDevice;
 
-public class UnpairedBluetoothDevices
+public class UnpairedBluetoothDevice
 {
     private BluetoothDevice bluetoothDevice;
 
-    public UnpairedBluetoothDevices(BluetoothDevice bluetoothDevice)
+    public UnpairedBluetoothDevice(BluetoothDevice bluetoothDevice)
     {
         this.bluetoothDevice = bluetoothDevice;
     }

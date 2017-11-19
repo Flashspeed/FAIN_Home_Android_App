@@ -1,14 +1,9 @@
 package com.example.custom_adapters;
 
-import android.app.Activity;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,9 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.custom_classes.UnpairedBluetoothDevices;
-import com.example.fain_home.ConnectADeviceActivity;
-import com.example.fain_home.MainActivity;
+import com.example.custom_classes.UnpairedBluetoothDevice;
 import com.example.fain_home.PairingActivity;
 import com.example.fain_home.R;
 
@@ -26,11 +19,11 @@ import java.util.ArrayList;
 
 import static android.support.v4.content.ContextCompat.startActivity;
 
-public class UnpairedBluetoothDevicesAdapter extends ArrayAdapter<UnpairedBluetoothDevices>
+public class UnpairedBluetoothDevicesAdapter extends ArrayAdapter<UnpairedBluetoothDevice>
 {
     public UnpairedBluetoothDevicesAdapter(
             @NonNull Context context,
-            @NonNull ArrayList<UnpairedBluetoothDevices> unpairedDevices)
+            @NonNull ArrayList<UnpairedBluetoothDevice> unpairedDevices)
     {
         super(context, 0, unpairedDevices);
     }
@@ -39,7 +32,7 @@ public class UnpairedBluetoothDevicesAdapter extends ArrayAdapter<UnpairedBlueto
     @Override
     public View getView(final int position, @Nullable View convertView, @NonNull ViewGroup parent)
     {
-        final UnpairedBluetoothDevices unpairedDevice = getItem(position);
+        final UnpairedBluetoothDevice unpairedDevice = getItem(position);
 
         LayoutInflater inflatedView = LayoutInflater.from(getContext());
         View customView = inflatedView.inflate(R.layout.bluetooth_device_entry, parent, false);

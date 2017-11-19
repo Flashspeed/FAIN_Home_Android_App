@@ -14,18 +14,18 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.custom_classes.PairedBluetoothDevices;
+import com.example.custom_classes.PairedBluetoothDevice;
 import com.example.fain_home.R;
 
 import java.util.ArrayList;
 
-public class PairedBluetoothDeviceAdapter extends ArrayAdapter<PairedBluetoothDevices>
+public class PairedBluetoothDevicesAdapter extends ArrayAdapter<PairedBluetoothDevice>
 {
     private ListView bluetoothConnectedDevicesListView;
 
-    public PairedBluetoothDeviceAdapter(
+    public PairedBluetoothDevicesAdapter(
             @NonNull Context context,
-            ArrayList<PairedBluetoothDevices> unpairedBluetoothDevices)
+            ArrayList<PairedBluetoothDevice> unpairedBluetoothDevices)
     {
         super(context, 0, unpairedBluetoothDevices);
     }
@@ -34,10 +34,10 @@ public class PairedBluetoothDeviceAdapter extends ArrayAdapter<PairedBluetoothDe
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent)
     {
-        final PairedBluetoothDevices pairedDevice         = getItem(position);
-        LayoutInflater               inflatedView         = LayoutInflater.from(getContext());
-        View                         customView           = inflatedView.inflate(R.layout.bluetooth_connected_devices_entry, parent, false);
-        ArrayList<String>            arrayListDeviceNames = new ArrayList<>();
+        final PairedBluetoothDevice pairedDevice         = getItem(position);
+        LayoutInflater              inflatedView         = LayoutInflater.from(getContext());
+        View                        customView           = inflatedView.inflate(R.layout.bluetooth_connected_devices_entry, parent, false);
+        ArrayList<String>           arrayListDeviceNames = new ArrayList<>();
 
         assert pairedDevice != null;
         String deviceName       = pairedDevice.getDeviceName();

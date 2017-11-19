@@ -18,7 +18,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.custom_adapters.UnpairedBluetoothDevicesAdapter;
-import com.example.custom_classes.UnpairedBluetoothDevices;
+import com.example.custom_classes.UnpairedBluetoothDevice;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -39,9 +39,9 @@ public class ConnectADeviceActivity extends AppCompatActivity
     final int    ASK_USER_ENABLE_BLUETOOTH_REQUEST_CODE            = 2;
     final int    ASK_USER_ENABLE_BLUETOOTH_ON_REFRESH_REQUEST_CODE = 3;
 
-    ArrayList<String>                   arrayListPairedDevices       = new ArrayList<>();
-    ArrayList<BluetoothDevice>          arrayListBluetoothDevice     = new ArrayList<>();
-    ArrayList<UnpairedBluetoothDevices> arrayUnpairedBluetoothDevice = new ArrayList<>();
+    ArrayList<String>                  arrayListPairedDevices       = new ArrayList<>();
+    ArrayList<BluetoothDevice>         arrayListBluetoothDevice     = new ArrayList<>();
+    ArrayList<UnpairedBluetoothDevice> arrayUnpairedBluetoothDevice = new ArrayList<>();
 
     /* Create broadcast receiver for when a bluetooth device is found */
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
@@ -52,10 +52,10 @@ public class ConnectADeviceActivity extends AppCompatActivity
 
             if (BluetoothDevice.ACTION_FOUND.equals(action))
             {
-                    /* Discovery process has found a device. Now get the BluetoothDevice object
-                       and its info from the Intent.
-                       getParcelableExtra() -> Retrieve extended data from the intent.
-                     */
+                /* Discovery process has found a device. Now get the BluetoothDevice object
+                   and its info from the Intent.
+                   getParcelableExtra() -> Retrieve extended data from the intent.
+                 */
                 BluetoothDevice foundDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
 
                 String deviceName       = foundDevice.getName();
@@ -63,15 +63,22 @@ public class ConnectADeviceActivity extends AppCompatActivity
 
                 arrayListBluetoothDevice.add(foundDevice);
 
-                UnpairedBluetoothDevices unpairedBluetoothDevices = new UnpairedBluetoothDevices(foundDevice);
+                UnpairedBluetoothDevice unpairedBluetoothDevice = new UnpairedBluetoothDevice(foundDevice);
 
-                arrayUnpairedBluetoothDevice.add(unpairedBluetoothDevices);
+                arrayUnpairedBluetoothDevice.add(unpairedBluetoothDevice);
 
-                UnpairedBluetoothDevicesAdapter unpairedDevice =
-                        new UnpairedBluetoothDevicesAdapter(getApplicationContext(), arrayUnpairedBluetoothDevice);
+                /* Only find compatible devices. Determined by manufacturer identifier details
+                 * contained in first 6 hex digits of the devices MAC Address.
+                 */
+                if (foundDevice.getAddress().toLowerCase().contains("98:d3:31"))
+                {
+                    UnpairedBluetoothDevicesAdapter unpairedDevice =
+                            new UnpairedBluetoothDevicesAdapter(getApplicationContext(), arrayUnpairedBluetoothDevice);
 
-                bluetoothDevicesListView.setAdapter(unpairedDevice);
-                Log.i(ACTIVITY_TAG, String.format("__(Found New)%s", deviceName));
+                    bluetoothDevicesListView.setAdapter(unpairedDevice);
+                    Log.i(ACTIVITY_TAG, String.format("__(Found New)%s", deviceName));
+                }
+
             }
             else if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action))
             {

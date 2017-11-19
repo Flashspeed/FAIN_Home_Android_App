@@ -7,8 +7,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.ListView;
 import android.widget.Switch;
 
-import com.example.custom_adapters.PairedBluetoothDeviceAdapter;
-import com.example.custom_classes.PairedBluetoothDevices;
+import com.example.custom_adapters.PairedBluetoothDevicesAdapter;
+import com.example.custom_classes.PairedBluetoothDevice;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -17,7 +17,7 @@ public class ConnectedDevicesActivity extends AppCompatActivity
 {
     ListView         bluetoothConnectedDevicesListView;
     BluetoothAdapter bluetoothAdapter;
-    ArrayList<PairedBluetoothDevices> arrayListPairedBluetoothDevices = new ArrayList<>();
+    ArrayList<PairedBluetoothDevice> arrayListPairedBluetoothDevices = new ArrayList<>();
     Switch deviceSwitch;
 
     @Override
@@ -47,20 +47,27 @@ public class ConnectedDevicesActivity extends AppCompatActivity
         {
             for (BluetoothDevice currentPairedDevice : pairedDevices)
             {
-                /* Create a new paired device object */
-                PairedBluetoothDevices pairedBluetoothDevice =
-                        new PairedBluetoothDevices(currentPairedDevice.getName(), currentPairedDevice.getAddress());
+                /* Only Show compatible devices. Determined by manufacturer identifier details
+                 * contained in first 6 hex digits of the devices MAC Address.
+                 */
+                if (currentPairedDevice.getAddress().toLowerCase().contains("98:d3:31"))
+                {
+                    /* Create a new paired device object */
+                    PairedBluetoothDevice pairedBluetoothDevice =
+                            new PairedBluetoothDevice(currentPairedDevice.getName(), currentPairedDevice.getAddress());
 
-                /* Add the paired device object to the paired device array list */
-                arrayListPairedBluetoothDevices.add(pairedBluetoothDevice);
+                    /* Add the paired device object to the paired device array list */
+                    arrayListPairedBluetoothDevices.add(pairedBluetoothDevice);
+                }
+
             }
 
             /* Pass the paired device array list to an adapter */
-            PairedBluetoothDeviceAdapter pairedBluetoothDeviceAdapter =
-                    new PairedBluetoothDeviceAdapter(getApplicationContext(), arrayListPairedBluetoothDevices);
+            PairedBluetoothDevicesAdapter pairedBluetoothDevicesAdapter =
+                    new PairedBluetoothDevicesAdapter(getApplicationContext(), arrayListPairedBluetoothDevices);
 
             /* Set the preferred list view to use the paired bluetooth device adapter */
-            bluetoothConnectedDevicesListView.setAdapter(pairedBluetoothDeviceAdapter);
+            bluetoothConnectedDevicesListView.setAdapter(pairedBluetoothDevicesAdapter);
         }
     }
 }
