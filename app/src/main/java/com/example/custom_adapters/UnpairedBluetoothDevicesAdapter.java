@@ -35,7 +35,7 @@ public class UnpairedBluetoothDevicesAdapter extends ArrayAdapter<UnpairedBlueto
         final UnpairedBluetoothDevice unpairedDevice = getItem(position);
 
         LayoutInflater inflatedView = LayoutInflater.from(getContext());
-        View customView = inflatedView.inflate(R.layout.bluetooth_device_entry, parent, false);
+        View           customView   = inflatedView.inflate(R.layout.bluetooth_device_entry, parent, false);
 
         final TextView textView = customView.findViewById(R.id.unpairedBluetoothDeviceName);
 

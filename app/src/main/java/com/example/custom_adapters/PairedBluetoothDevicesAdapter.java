@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Switch;
@@ -15,12 +14,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.custom_classes.PairedBluetoothDevice;
+import com.example.fain_home.PairingActivity;
 import com.example.fain_home.R;
 
 import java.util.ArrayList;
 
 public class PairedBluetoothDevicesAdapter extends ArrayAdapter<PairedBluetoothDevice>
 {
+    private final String BED_1_LIGHT_ON  = "bed_1_on!";
+    private final String BED_1_LIGHT_OFF = "bed_1_off!";
     private ListView bluetoothConnectedDevicesListView;
 
     public PairedBluetoothDevicesAdapter(
@@ -43,6 +45,7 @@ public class PairedBluetoothDevicesAdapter extends ArrayAdapter<PairedBluetoothD
         String deviceName       = pairedDevice.getDeviceName();
         String deviceMacAddress = pairedDevice.getDeviceMacAddress();
 
+
         /* Every time getView is called add the device name to array list */
         arrayListDeviceNames.add(deviceName);
 
@@ -56,6 +59,35 @@ public class PairedBluetoothDevicesAdapter extends ArrayAdapter<PairedBluetoothD
         textView.setText(deviceName);
 
         deviceSwitch.setTag(position);
+        textView.setOnLongClickListener(new View.OnLongClickListener()
+        {
+            @Override
+            public boolean onLongClick(View v)
+            {
+                //TODO Allow user to unpair device by long holding on the connected device
+                Toast.makeText(
+                        getContext(),
+                        String.format("You long held textview %s",
+                                textView.getText()
+                        ),
+                        Toast.LENGTH_SHORT).show();
+                return true;
+            }
+        });
+
+        textView.setOnClickListener(new OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Toast.makeText(
+                        getContext(),
+                        String.format("You tapped textview %s",
+                                textView.getText()
+                        ),
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
 
         deviceSwitch.setOnClickListener(new OnClickListener()
         {
@@ -71,6 +103,7 @@ public class PairedBluetoothDevicesAdapter extends ArrayAdapter<PairedBluetoothD
                                     deviceSwitch.isChecked()
                             ),
                             Toast.LENGTH_SHORT).show();
+                    PairingActivity.bluetoothService.write(BED_1_LIGHT_ON.getBytes());
                 }
                 else
                 {
@@ -80,23 +113,11 @@ public class PairedBluetoothDevicesAdapter extends ArrayAdapter<PairedBluetoothD
                                     textView.getText(),
                                     deviceSwitch.isChecked()),
                             Toast.LENGTH_SHORT).show();
+                    PairingActivity.bluetoothService.write(BED_1_LIGHT_OFF.getBytes());
                 }
             }
         });
 
         return customView;
-    }
-
-    public class bluetoothConnectedDeviceItemClickListener implements AdapterView.OnItemClickListener
-    {
-        /* When the user taps an item in the list view */
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-        {
-            Toast.makeText(
-                    getContext(),
-                    String.format("You tapped %s", bluetoothConnectedDevicesListView.getItemAtPosition(position)),
-                    Toast.LENGTH_SHORT).show();
-        }
     }
 }

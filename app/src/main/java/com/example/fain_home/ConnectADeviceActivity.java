@@ -25,6 +25,11 @@ import java.util.Set;
 
 public class ConnectADeviceActivity extends AppCompatActivity
 {
+    final String ACTIVITY_TAG                                      = "ConnectADeviceActivity";
+    final String BLUETOOTH_TAG                                     = "Bluetooth Activity";
+    final int    REQUEST_CODE                                      = 1;
+    final int    ASK_USER_ENABLE_BLUETOOTH_REQUEST_CODE            = 2;
+    final int    ASK_USER_ENABLE_BLUETOOTH_ON_REFRESH_REQUEST_CODE = 3;
     /*
      * https://stackoverflow.com/questions/38188887/android-6-0-bluetooth-no-code-exists-for-action-found-broadcast-intent
      */
@@ -32,13 +37,6 @@ public class ConnectADeviceActivity extends AppCompatActivity
     BluetoothAdapter   bluetoothAdapter;
     Intent             intentBluetoothEnable;
     SwipeRefreshLayout swipeRefreshLayout;
-
-    final String ACTIVITY_TAG                                      = "ConnectADeviceActivity";
-    final String BLUETOOTH_TAG                                     = "Bluetooth Activity";
-    final int    REQUEST_CODE                                      = 1;
-    final int    ASK_USER_ENABLE_BLUETOOTH_REQUEST_CODE            = 2;
-    final int    ASK_USER_ENABLE_BLUETOOTH_ON_REFRESH_REQUEST_CODE = 3;
-
     ArrayList<String>                  arrayListPairedDevices       = new ArrayList<>();
     ArrayList<BluetoothDevice>         arrayListBluetoothDevice     = new ArrayList<>();
     ArrayList<UnpairedBluetoothDevice> arrayUnpairedBluetoothDevice = new ArrayList<>();
