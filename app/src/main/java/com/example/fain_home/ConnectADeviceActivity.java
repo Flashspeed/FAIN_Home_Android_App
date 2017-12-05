@@ -68,14 +68,14 @@ public class ConnectADeviceActivity extends AppCompatActivity
                 /* Only find compatible devices. Determined by manufacturer identifier details
                  * contained in first 6 hex digits of the devices MAC Address.
                  */
-                if (foundDevice.getAddress().toLowerCase().contains("98:d3:31"))
-                {
+//                if (foundDevice.getAddress().toLowerCase().contains("98:d3:31"))
+//                {
                     UnpairedBluetoothDevicesAdapter unpairedDevice =
                             new UnpairedBluetoothDevicesAdapter(getApplicationContext(), arrayUnpairedBluetoothDevice);
 
                     bluetoothDevicesListView.setAdapter(unpairedDevice);
                     Log.i(ACTIVITY_TAG, String.format("__(Found New)%s", deviceName));
-                }
+//                }
 
             }
             else if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action))

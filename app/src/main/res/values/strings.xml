@@ -100,4 +100,6 @@
     <string name="txtPlaceHolderConnectedBluetoothText">Bluetooth Device Name</string>
     <string name="txtBluetoothNotSupported">Your device does not support Bluetooth Technology</string>
     <string name="txtBluetoothIsSupported">Bluetooth is Supported</string>
+    <string name="txtBedroomLight">Bedroom Lights</string>
+    <string name="txtGarageDoor">Garage Door</string>
 </resources>

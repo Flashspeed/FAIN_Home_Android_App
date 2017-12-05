@@ -54,12 +54,16 @@ public class PairedBluetoothDevicesAdapter extends ArrayAdapter<PairedBluetoothD
             System.out.println(String.format("__Device names %s", names));
         }
 
-        final Switch   deviceSwitch = customView.findViewById(R.id.deviceStateSwitch);
-        final TextView textView     = customView.findViewById(R.id.connectedDeviceName);
-        textView.setText(deviceName);
+        final Switch   deviceSwitch  = customView.findViewById(R.id.deviceStateSwitch);
+        final TextView textView1      = customView.findViewById(R.id.connectedDeviceName);
+        final Switch   garageDoor = customView.findViewById(R.id.deviceStateSwitch2);
+        final TextView textViewGarageDoor      = customView.findViewById(R.id.connectedDeviceName2);
+        textView1.setText(R.string.txtBedroomLight);
+        textViewGarageDoor.setText(R.string.txtGarageDoor);
+
 
         deviceSwitch.setTag(position);
-        textView.setOnLongClickListener(new View.OnLongClickListener()
+        textView1.setOnLongClickListener(new View.OnLongClickListener()
         {
             @Override
             public boolean onLongClick(View v)
@@ -68,14 +72,30 @@ public class PairedBluetoothDevicesAdapter extends ArrayAdapter<PairedBluetoothD
                 Toast.makeText(
                         getContext(),
                         String.format("You long held textview %s",
-                                textView.getText()
+                                textView1.getText()
                         ),
                         Toast.LENGTH_SHORT).show();
                 return true;
             }
         });
 
-        textView.setOnClickListener(new OnClickListener()
+        textViewGarageDoor.setOnLongClickListener(new View.OnLongClickListener()
+        {
+            @Override
+            public boolean onLongClick(View v)
+            {
+                //TODO Allow user to unpair device by long holding on the connected device
+                Toast.makeText(
+                        getContext(),
+                        String.format("You long held textview %s",
+                                textViewGarageDoor.getText()
+                        ),
+                        Toast.LENGTH_SHORT).show();
+                return true;
+            }
+        });
+
+        textView1.setOnClickListener(new OnClickListener()
         {
             @Override
             public void onClick(View v)
@@ -83,7 +103,21 @@ public class PairedBluetoothDevicesAdapter extends ArrayAdapter<PairedBluetoothD
                 Toast.makeText(
                         getContext(),
                         String.format("You tapped textview %s",
-                                textView.getText()
+                                textView1.getText()
+                        ),
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        textViewGarageDoor.setOnClickListener(new OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Toast.makeText(
+                        getContext(),
+                        String.format("You tapped textview %s",
+                                textViewGarageDoor.getText()
                         ),
                         Toast.LENGTH_SHORT).show();
             }
@@ -99,7 +133,7 @@ public class PairedBluetoothDevicesAdapter extends ArrayAdapter<PairedBluetoothD
                     Toast.makeText(
                             getContext(),
                             String.format("Checked state for switch %s is %s",
-                                    textView.getText(),
+                                    textView1.getText(),
                                     deviceSwitch.isChecked()
                             ),
                             Toast.LENGTH_SHORT).show();
@@ -110,8 +144,37 @@ public class PairedBluetoothDevicesAdapter extends ArrayAdapter<PairedBluetoothD
                     Toast.makeText(
                             getContext(),
                             String.format("Checked state for switch %s is %b",
-                                    textView.getText(),
+                                    textView1.getText(),
                                     deviceSwitch.isChecked()),
+                            Toast.LENGTH_SHORT).show();
+                    PairingActivity.bluetoothService.write(BED_1_LIGHT_OFF.getBytes());
+                }
+            }
+        });
+
+        garageDoor.setOnClickListener(new OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                if (garageDoor.isChecked())
+                {
+                    Toast.makeText(
+                            getContext(),
+                            String.format("Checked state for switch %s is %s",
+                                    textViewGarageDoor.getText(),
+                                    garageDoor.isChecked()
+                            ),
+                            Toast.LENGTH_SHORT).show();
+                    PairingActivity.bluetoothService.write(BED_1_LIGHT_ON.getBytes());
+                }
+                else
+                {
+                    Toast.makeText(
+                            getContext(),
+                            String.format("Checked state for switch %s is %b",
+                                    textViewGarageDoor.getText(),
+                                    garageDoor.isChecked()),
                             Toast.LENGTH_SHORT).show();
                     PairingActivity.bluetoothService.write(BED_1_LIGHT_OFF.getBytes());
                 }
