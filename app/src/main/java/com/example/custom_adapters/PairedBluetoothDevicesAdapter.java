@@ -45,7 +45,6 @@ public class PairedBluetoothDevicesAdapter extends ArrayAdapter<PairedBluetoothD
         String deviceName       = pairedDevice.getDeviceName();
         String deviceMacAddress = pairedDevice.getDeviceMacAddress();
 
-
         /* Every time getView is called add the device name to array list */
         arrayListDeviceNames.add(deviceName);
 
@@ -54,10 +53,10 @@ public class PairedBluetoothDevicesAdapter extends ArrayAdapter<PairedBluetoothD
             System.out.println(String.format("__Device names %s", names));
         }
 
-        final Switch   deviceSwitch  = customView.findViewById(R.id.deviceStateSwitch);
-        final TextView textView1      = customView.findViewById(R.id.connectedDeviceName);
-        final Switch   garageDoor = customView.findViewById(R.id.deviceStateSwitch2);
-        final TextView textViewGarageDoor      = customView.findViewById(R.id.connectedDeviceName2);
+        final Switch   deviceSwitch       = customView.findViewById(R.id.deviceStateSwitch);
+        final TextView textView1          = customView.findViewById(R.id.connectedDeviceName);
+        final Switch   garageDoor         = customView.findViewById(R.id.deviceStateSwitch2);
+        final TextView textViewGarageDoor = customView.findViewById(R.id.connectedDeviceName2);
         textView1.setText(R.string.txtBedroomLight);
         textViewGarageDoor.setText(R.string.txtGarageDoor);
 
