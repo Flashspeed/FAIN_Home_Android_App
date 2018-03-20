@@ -25,7 +25,11 @@ public class BluetoothService
      * Hint: If you are connecting to a Bluetooth serial board then try using the well-known
      * SPP UUID 00001101-0000-1000-8000-00805F9B34FB. However if you are connecting to an
      * Android peer then please generate your own unique UUID. */
-    private final String HC06_UUID = "00001101-0000-1000-8000-00805F9B34FB";
+     /* This one will work with my HC-06 Bluetooth module */
+//    private final String HC06_UUID = "00001101-0000-1000-8000-00805F9B34FB";
+
+    /* This one will work with the red SRF04 Bluetooth module */
+    private final String HC06_UUID = "00001101-0000-1000-8000-00805f9b34fb";
     BluetoothAdapter bluetoothAdapter;
     Context context;
 

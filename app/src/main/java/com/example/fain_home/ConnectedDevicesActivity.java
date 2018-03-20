@@ -4,6 +4,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.ListView;
 import android.widget.Switch;
 
@@ -12,6 +13,8 @@ import com.example.custom_classes.PairedBluetoothDevice;
 
 import java.util.ArrayList;
 import java.util.Set;
+
+import static android.webkit.ConsoleMessage.MessageLevel.LOG;
 
 public class ConnectedDevicesActivity extends AppCompatActivity
 {
@@ -50,8 +53,12 @@ public class ConnectedDevicesActivity extends AppCompatActivity
                 /* Only Show compatible devices. Determined by manufacturer identifier details
                  * contained in first 6 hex digits of the devices MAC Address.
                  */
-                if (currentPairedDevice.getAddress().toLowerCase().contains("98:d3:31"))
+                if (currentPairedDevice.getAddress().toLowerCase().contains("98:d3:31".toLowerCase()) ||
+                        currentPairedDevice.getAddress().toLowerCase().contains("DA:D0:55".toLowerCase()))
                 {
+                    Log.i("FOUND COMPATIBLE DEVICE",
+                            String.format("%s", "Found a compatible device: " +
+                                    currentPairedDevice.getAddress().toLowerCase()));
                     /* Create a new paired device object */
                     PairedBluetoothDevice pairedBluetoothDevice =
                             new PairedBluetoothDevice(currentPairedDevice.getName(), currentPairedDevice.getAddress());
